@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -86,19 +87,38 @@ public class ImageController {
     //This controller method is called when the request pattern is of type 'editImage'
     //This method fetches the image with the corresponding id from the database and adds it to the model with the key as 'image'
     //The method then returns 'images/edit.html' file wherein you fill all the updated details of the image
-
+    //The method also check for valid user that is only the owner of the image can edit the image
     //The method first needs to convert the list of all the tags to a string containing all the tags separated by a comma and then add this string in a Model type object
     //This string is then displayed by 'edit.html' file as previous tags of an image
     @RequestMapping(value = "/editImage")
-    public String editImage(@RequestParam("imageId") Integer imageId, Model model) {
+    public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session,
+                            final RedirectAttributes redirectAttributes) {
         Image image = imageService.getImage(imageId);
 
         String tags = convertTagsToString(image.getTags());
+        Boolean isLoggedUSer = validUser(image.getUser(), session);
+        String error = "Only the owner of the image can edit the image";
         model.addAttribute("image", image);
         model.addAttribute("tags", tags);
-        return "images/edit";
-    }
 
+        if (!isLoggedUSer) {
+            redirectAttributes.addAttribute("editError", error);
+            model.addAttribute("editError", "Only the owner of the image can edit the image");
+            redirectAttributes.addFlashAttribute("editError", error);
+            return "redirect:/images/" + image.getId() + "/" + image.getTitle();
+        } else {
+            return "images/edit";
+        }
+    }
+    // This method is to make sure that logged in user is the owner of image
+    private Boolean validUser(User user, HttpSession session) {
+        User loggedInuser = (User) session.getAttribute("loggeduser");
+        if (user.getId() == loggedInuser.getId()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     //This controller method is called when the request pattern is of type 'images/edit' and also the incoming request is of PUT type
     //The method receives the imageFile, imageId, updated image, along with the Http Session
     //The method adds the new imageFile to the updated image if user updates the imageFile and adds the previous imageFile to the new updated image if user does not choose to update the imageFile
@@ -130,7 +150,7 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-        return "redirect:/images/" + updatedImage.getTitle();
+        return "redirect:/images/" + updatedImage.getId() + "/" + updatedImage.getTitle();
     }
 
 
