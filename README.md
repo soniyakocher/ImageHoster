@@ -30,8 +30,8 @@ You must manually create a database named ‘imageHoster’ in PostgreSQL with t
 Change the username and password in the stub file in the ‘src/main/java/imageHoster/config/JpaConfig.java’ file and ‘src/main/resources/META-INF/persistence.xml’ file according to your PostgreSQL username and password. 
 Note that it is mandatory to assign at least one tag/category to an image while you upload the image. If you do not assign any tag to the image, the image will get uploaded in the application. But when you try to edit the image, the application throws an error. 
 ***To-Do Tasks***
-***Part A: Fixing Issues
-1. Image upload issues:****
+***Part A: Fixing Issues***
+***1. Image upload issues:*** 
 
 If you upload an image with the same exact title as of a previously uploaded image, it will get uploaded. But then, if you try to navigate to one of the images with the same title, the image uploader will display an error.
 Please fix this issue, so that the application should not show an error and take you to respective image’s page.
