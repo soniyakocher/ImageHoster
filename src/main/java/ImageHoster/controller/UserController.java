@@ -48,7 +48,7 @@ public class UserController {
             userService.registerUser(user);
             return  "users/login";
         }else{
-            String error= "Password must contain atleast 1 alphabet,1 number & 1 special character";
+            String error= "Password must contain atleast 1 alphabet, 1 number & 1 special character";
             redirectAttributes.addAttribute("passwordTypeError",error).addFlashAttribute("passwordTypeError",error);
             return "redirect:/users/registration";
         }
