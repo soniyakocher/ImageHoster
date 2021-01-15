@@ -26,7 +26,8 @@ public class ImageController {
 
     @Autowired
     private TagService tagService;
-    @Autowired
+
+    @Autowired(required = true)
     private CommentService commentService;
 
     //This method displays all the images in the user home page after successful login
@@ -38,7 +39,7 @@ public class ImageController {
     }
 
     //This method is called when the details of the specific image with corresponding title are to be displayed
-    //The logic is to get the image from the databse with corresponding title. After getting the image from the database the details are shown
+    //The logic is to get the image from the database with corresponding title. After getting the image from the database the details are shown
     //First receive the dynamic parameter in the incoming request URL in a string variable 'title' and also the Model type object
     //Call the getImageByTitle() method in the business logic to fetch all the details of that image
     //Add the image in the Model type object with 'image' as the key
@@ -118,8 +119,8 @@ public class ImageController {
     }
     // This method is to make sure that logged in user is the owner of image
     private Boolean validUser(User user, HttpSession session) {
-        User loggedInuser = (User) session.getAttribute("loggeduser");
-        if (user.getId() == loggedInuser.getId()) {
+        User loggedInUser = (User) session.getAttribute("loggeduser");
+        if (user.getId() == loggedInUser.getId()) {
             return true;
         } else {
             return false;
@@ -220,13 +221,17 @@ public class ImageController {
     private String convertTagsToString(List<Tag> tags) {
         StringBuilder tagString = new StringBuilder();
 
-        for (int i = 0; i <= tags.size() - 2; i++) {
-            tagString.append(tags.get(i).getName()).append(",");
+        if (tags.size() > 0) {
+            for (int i = 0; i <= tags.size() - 2; i++) {
+                tagString.append(tags.get(i).getName()).append(",");
+            }
+
+            Tag lastTag = tags.get(tags.size() - 1);
+            tagString.append(lastTag.getName());
+
+            return tagString.toString();
+        } else {
+            return "";
         }
-
-        Tag lastTag = tags.get(tags.size() - 1);
-        tagString.append(lastTag.getName());
-
-        return tagString.toString();
     }
 }
